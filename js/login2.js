@@ -112,4 +112,3 @@ function logout(){
 }
 
 document.getElementById("logout_btn").addEventListener('click', logout);
-

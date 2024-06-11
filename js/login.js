@@ -44,12 +44,20 @@ const check_input = () => {
     alert('비밀번호를 입력하세요.');
     return false;
     }
-    if (emailValue.length < 5) {
-        alert('아이디는최소5글자이상입력해야합니다.');
+    if (emailValue.length > 11) {
+        alert('아이디는10글자이하입력해야합니다.');
         return false;
         }
-        if (passwordValue.length < 12) {
-        alert('비밀번호는반드시12글자이상입력해야합니다.');
+        if (emailValue.length > 3 && emailValue.match(/(.{3,}).*\1/)) {
+            alert('3글자 이상 반복되는 패턴은 입력할 수 없습니다.');
+            return false;
+        }
+        if (emailValue.match(/(\d{2,}).*\1/)) {
+            alert('연속되는 숫자가 2개 이상 반복될 수 없습니다.');
+            return false;
+        }
+        if (passwordValue.length > 16) {
+        alert('비밀번호는반드시15글자이하입력해야합니다.');
         return false;
         }
         const hasSpecialChar = passwordValue.match(/[!,@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?]+/) !== null;
@@ -89,7 +97,7 @@ const check_input = () => {
         setCookie("id", emailValue.value, 0); //날짜를 0 - 쿠키 삭제
     }
     
-    session_set();    
+    session_set();  
     loginForm.submit();
 
     };
@@ -112,5 +120,23 @@ function logout(){
     location.href='../index.html';
 }
 
-document.getElementById("login_btn").addEventListener('click', check_input);
+function login_failed() {
+    let failCount = getCookie("login_fail_count"); // 쿠키에서 로그인 실패 횟수 가져오기
 
+    if (!failCount) { // 쿠키가 없는 경우
+        setCookie("login_fail_count", 1, 1); // 실패 횟수를 1로 초기화하고 쿠키 생성
+        failCount = 1;
+    } else { // 쿠키가 있는 경우
+        failCount = parseInt(failCount); // 문자열을 정수로 변환
+        if (failCount >= 5) {
+            alert("로그인이 제한되었습니다.");
+            return;
+        }
+        failCount++; // 실패 횟수 증가
+        setCookie("login_fail_count", failCount, 1); // 실패 횟수 갱신
+    }
+
+    alert("로그인 실패. 현재 " + failCount + "번 실패하였습니다.");
+}
+
+document.getElementById("login_btn").addEventListener('click', check_input);
